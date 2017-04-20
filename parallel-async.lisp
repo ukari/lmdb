@@ -3,7 +3,7 @@
    (lambda (f) (funcall g (lambda (&rest x) (apply (funcall f f) x))))))
 
 
-(defun gen-async ()
+(defun gen-parallel-async ()
   (let ((list)
         (tasks)
         (singal))
