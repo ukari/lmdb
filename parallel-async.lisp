@@ -2,32 +2,40 @@
   ((lambda (f) (funcall f f))
    (lambda (f) (funcall g (lambda (&rest x) (apply (funcall f f) x))))))
 
+(defun gen-error-trap ()
+  (let ((mailbox))
+    (progn )))
 
 (defun gen-parallel-async ()
-  (let ((list)
-        (tasks)
-        (singal))
-    (progn
-      (sb-thread:make-thread
-       (y (lambda (fn) (lambda () (progn
-                          (setf list (nconc list tasks))
-                          (setf tasks nil)
-                          (let ((task (car list)))
-                            (progn (if (not (eq task nil))
-                                       (progn (setf list (cdr list))
-                                              (print "go")
-                                              ;;(print task)
-                                              (funcall task)
-                                              (sleep 0))
-                                       (progn (sleep 1)
-                                              (print "sil")))
-                                   (cond ((equal singal :end) nil)
-                                         (t (funcall fn))))))))))
-      (list (cons :add (lambda (task)
-                         (progn
-                           (sleep 0)
-                           (setf tasks (append tasks (list task))))))
-            (cons :end (lambda () (setf singal :end)))))))
+  ((lambda (wrap)
+     (let ((list)
+           (tasks)
+           (singal))
+       (progn
+         (sb-thread:make-thread
+          (y (lambda (fn) (lambda () (progn
+                             (setf list (nconc list tasks))
+                             (setf tasks nil)
+                             (let ((task (car list)))
+                               (progn (if (not (eq task nil))
+                                          (progn (setf list (cdr list))
+                                                 (print "go")
+                                                 ;;(print task)
+                                                 (funcall (funcall wrap task))
+                                                 (sleep 0))
+                                          (progn (sleep 1)
+                                                 (print "sil")))
+                                      (cond ((equal singal :end) nil)
+                                            (t (funcall fn))))))))))
+         (list (cons :add (lambda (&rest task)
+                            (progn
+                              (sleep 0)
+                              (setf tasks (append tasks task)))))
+               (cons :end (lambda () (setf singal :end)))))))
+   (lambda (fn)
+     (lambda (&rest x)
+       (handler-case (apply fn x)
+         (error (condition) (print condition)))))))
 
 
 ;; (defparameter async (gen-async))
