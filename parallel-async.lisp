@@ -24,14 +24,15 @@
                        (cond ((equal singal :end) nil)
                              (t (progn (if (eq task nil)
                                            (sleep 1)
-                                           (sleep 0))
+                                        ;(sleep 0)
+                                           )
                                        (funcall fn)))))))))
        (values (list (cons :add (lambda (task)
                                   (funcall (dot :en tasks) task)))
                      (cons :end (lambda () (setf singal :end)))))))
    (lambda (fn)
-     (lambda (&rest x)
-       (handler-case (apply fn x)
+     (lambda ()
+       (handler-case (funcall fn)
          (error (condition) (print condition)))))))
 
 
