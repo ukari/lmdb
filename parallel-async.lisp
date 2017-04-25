@@ -17,7 +17,7 @@
                        (if (not (eq task nil))
                            (progn
                              (print "go")
-                             ;;(atomic-incf tasknum)
+                             ;(atomic-incf tasknum)
                              (funcall
                               (funcall wrap task)))
                            (progn (print "sil")))
@@ -77,3 +77,9 @@
                                       (safe-pointto queue :p-tail
                                                     (dot :prev (dot :p-tail queue))
                                                     :callback (lambda () (setf e (car (dot :value (dot :p-tail queue)))))) e))))))))
+
+
+(defun test (number)
+  (times number (lambda (n) (funcall (lambda (async)
+                                  (times 10000 (lambda (i) (funcall (dot :add async) (lambda () (format t "~A : ~A~%" n i) (if (eq i 9999) (funcall (dot :end async))))))))
+                                (gen-parallel-async)))))
