@@ -86,12 +86,13 @@
                                                    ((lambda (prev)
                                         ;(print queue)
                                                       (setf e (car (dot :value prev)))
-                                                      (setf (cdr (assoc :p-tail queue)) prev)
-                                                      (setf (car (dot :status prev)) nil)
+                                                      (setf (cdr (assoc :p-tail queue)) prev);;maybe optimize
+                                                      (setf (car (dot :status prev)) nil);;maybe optimize
                                         ;(print queue)
                                                       )
                                                     (dot :prev tail)))
-                                               (setf e nil)))
+                                               (setf e nil);;shouldn't walk here
+                                               ))
                                          (dot :p-tail queue))
                                         e)))))))))
 
